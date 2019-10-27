@@ -1,5 +1,5 @@
 """
-中古擬音韻分解工具，可將韻（IPA 形式）分解爲韻頭、韻腹、韻尾
+中古擬音／拼音韻母分解工具，可將韻（IPA 形式）分解爲韻頭、韻腹、韻尾
 ----------
 使用方法：
     from triungkoxim_yonh_decompose import decompose_yonh, YonhParts
@@ -37,9 +37,11 @@ YONH_PIUK_IPAS = [
 ]
 
 YONH_MYOIX_IPAS = [
-    "u", "w", "i", "j", # 陰聲韻 -i, -u
-    "m", "n", "ŋ", "ng", "ŋʷ", # 陽聲韻 -m -n -ng
-    "p", "t", "k", "kʷ", # 入聲韻 -p -t -k
+    "jɕ", "ng",
+    "u", "w", "i", "j", "ɕ", # 陰聲韻 -i, -u
+    "m", "n", "ŋʷ", "ŋ", # 陽聲韻 -m -n -ng
+    "p", "t", "kʷ", "k",  # 入聲韻 -p -t -k
+    "c", "ɲ",
 ]
 
 def to_re_groups(txt: list):
@@ -74,7 +76,8 @@ def decompose_yonh(yonh: str):
 
     if matched:
         for yonh_part in YonhParts:
-            result[yonh_part] = group if (group := matched.group(MATCHING_GROUP_INDECIES[yonh_part])) else ""
+            group = matched.group(MATCHING_GROUP_INDECIES[yonh_part])
+            result[yonh_part] = group if group else ""
         if "".join(result.values()) != yonh:
             raise ValueError(MSG_INVALID_YONH.format(yonh))
     else:
@@ -116,6 +119,11 @@ class Test(unittest.TestCase):
             YonhParts.YONH_PIUK:  "ɐ",
             YonhParts.YONH_MYOIX: "p",
         },
+        "jɛjɕ": {
+            YonhParts.YONH_DU:    "j",
+            YonhParts.YONH_PIUK:  "ɛ",
+            YonhParts.YONH_MYOIX: "jɕ"
+        }
     }
 
     def test_normal_case(self):
